@@ -33,12 +33,18 @@
         public function getAll(){
             $query = "
                 select 
-                    t.id, t.id_usuario, u.nome, t.tweet, DATE_FORMAT(t.data, '%d/%m/%Y %H:%i') as data
+                    t.id, 
+                    t.id_usuario, 
+                    u.nome, 
+                    t.tweet, 
+                    DATE_FORMAT(t.data, '%d/%m/%Y %H:%i') as data
                 from 
                     tweets as t
                     left join usuarios as u on (t.id_usuario = u.id)
                 where 
-                    id_usuario = :id_usuario
+                    t.id_usuario = :id_usuario
+                    or t.id in(
+                        select id_usuario_seguindo from usuarios_seguidores where id_usuario = :id_usuario)
                 order by
                     t.data desc
             ";
@@ -50,6 +56,16 @@
             return $stmt->fetchAll(\PDO::FETCH_ASSOC);
         }
 
+        public function removerTweet(){
+            $query = "
+                delete from tweets where id = :id_tweet;
+            ";
+            $stmt = $this->db->prepare($query);
+            $stmt->bindValue(':id_tweet', $this->__get('id'));
+            $stmt->execute();
+
+            return true;
+        }
     }
 
 

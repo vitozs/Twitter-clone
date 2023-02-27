@@ -91,6 +91,17 @@
 
             //id_usuario
         }
+
+        public function removerTweet(){
+            $this->validaAuth();
+            $id_tweet = $_GET['id_tweet'];
+
+            $tweet = Container::getModel('Tweet');
+            $tweet->__set('id', $id_tweet);
+            $tweet->removerTweet();
+
+            header('Location: /timeline');
+        }
     }
 
 ?>
